@@ -50,11 +50,14 @@ export default async function onRequest(context) {
         }
 
         // 代理请求到 ippure.com
-        const apiUrl = `https://my.ippure.com/v1/info/${clientIP}`;
+        // 使用原始 API 端点，通过 X-Forwarded-For 传递客户端真实 IP
+        const apiUrl = 'https://my.ippure.com/v1/info';
         const response = await fetch(apiUrl, {
             headers: {
                 'User-Agent': 'Fuwari-Blog/1.0',
                 'Accept': 'application/json',
+                'X-Forwarded-For': clientIP,
+                'X-Real-IP': clientIP,
             },
         });
 
