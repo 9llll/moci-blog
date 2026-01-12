@@ -15,22 +15,60 @@
 
   const ranges = [1, 7, 14, 30];
 
+  // 解析日期字符串为本地时间（如果没有时区信息）
+  function parseLocalDate(dateInput: string | Date | undefined): Date | null {
+    if (!dateInput) return null;
+    const dateStr = String(dateInput);
+
+    // 如果日期字符串没有时区信息，按本地时间解析
+    if (
+      !dateStr.includes("Z") &&
+      !dateStr.includes("+") &&
+      !dateStr.includes("-", 10)
+    ) {
+      const parts = dateStr.split(/[-T:]/);
+      if (parts.length >= 3) {
+        return new Date(
+          parseInt(parts[0]),
+          parseInt(parts[1]) - 1,
+          parseInt(parts[2]),
+          parseInt(parts[3] || "0"),
+          parseInt(parts[4] || "0"),
+          parseInt(parts[5] || "0")
+        );
+      }
+    }
+    return new Date(dateStr);
+  }
+
+  // 格式化日期显示
+  function formatDate(dateInput: string | Date | undefined): string {
+    const date = parseLocalDate(dateInput);
+    if (!date || isNaN(date.getTime())) return "N/A";
+    return date.toLocaleDateString();
+  }
+
   function getFilteredAndSortedPosts(allPosts: Post[], days: number): Post[] {
     const now = new Date();
-    const cutoff = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+    const cutoff = new Date(
+      todayStart.getTime() - (days - 1) * 24 * 60 * 60 * 1000
+    );
 
     return allPosts
       .filter((post) => {
         if (!post.updated) return false;
-        const updatedDate = new Date(post.updated);
-        // Ensure valid date
-        if (isNaN(updatedDate.getTime())) return false;
+        const updatedDate = parseLocalDate(post.updated);
+        if (!updatedDate || isNaN(updatedDate.getTime())) return false;
         return updatedDate >= cutoff;
       })
       .sort((a, b) => {
-        // Handle optional updated property safely
-        const dateA = a.updated ? new Date(a.updated) : new Date(0);
-        const dateB = b.updated ? new Date(b.updated) : new Date(0);
+        const dateA = parseLocalDate(a.updated) || new Date(0);
+        const dateB = parseLocalDate(b.updated) || new Date(0);
         return dateB.getTime() - dateA.getTime();
       });
   }
@@ -76,11 +114,7 @@
             class="flex items-center gap-2 text-xs text-neutral-400 group-hover:text-[var(--primary)]/70 transition-colors"
           >
             <div class="w-1.5 h-1.5 rounded-full bg-[var(--primary)]"></div>
-            <span
-              >{new Date(
-                post.updated || post.published
-              ).toLocaleDateString()}</span
-            >
+            <span>{formatDate(post.updated || post.published)}</span>
           </div>
         </a>
       {/each}
