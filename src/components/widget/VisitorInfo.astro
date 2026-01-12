@@ -78,48 +78,12 @@ const style = Astro.props.style;
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
                 <path d="m9 12 2 2 4-4"/>
             </svg>
-            <span>检测 IP 纯净度</span>
+            <span>查看 IP 信息卡</span>
         </button>
         <div id="ip-purity-result" class="purity-result hidden">
-            <div class="purity-item">
-                <span class="icon-wrapper icon-score">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2v4"/>
-                        <path d="m16.2 7.8 2.9-2.9"/>
-                        <path d="M18 12h4"/>
-                        <path d="m16.2 16.2 2.9 2.9"/>
-                        <path d="M12 18v4"/>
-                        <path d="m4.9 19.1 2.9-2.9"/>
-                        <path d="M2 12h4"/>
-                        <path d="m4.9 4.9 2.9 2.9"/>
-                    </svg>
-                </span>
-                <span class="purity-label">纯净度:</span>
-                <span id="fraud-score" class="purity-value">--</span>
-            </div>
-            <div class="purity-item">
-                <span class="icon-wrapper icon-residential">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                        <polyline points="9 22 9 12 15 12 15 22"/>
-                    </svg>
-                </span>
-                <span class="purity-label">住宅 IP:</span>
-                <span id="is-residential" class="purity-value">--</span>
-            </div>
-            <div class="purity-item">
-                <span class="icon-wrapper icon-broadcast">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/>
-                        <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/>
-                        <circle cx="12" cy="12" r="2"/>
-                        <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/>
-                        <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/>
-                    </svg>
-                </span>
-                <span class="purity-label">广播 IP:</span>
-                <span id="is-broadcast" class="purity-value">--</span>
-            </div>
+            <a href="https://ippure.com" target="_blank" rel="noopener noreferrer" class="ippure-card-link">
+                <img id="ippure-card-img" data-src="https://my.ippure.com/v1/card" alt="IP信息卡片" class="ippure-card-img" />
+            </a>
         </div>
     </div>
 </WidgetLayout>
@@ -222,54 +186,33 @@ const style = Astro.props.style;
         border-color: rgba(255, 255, 255, 0.25);
         color: rgba(255, 255, 255, 0.95);
     }
-    .purity-check-btn:active {
-        transform: translateY(0);
+    .purity-check-btn.expanded {
+        border-radius: 8px 8px 0 0;
+        border-bottom: none;
     }
     .purity-check-btn.loading {
         pointer-events: none;
         opacity: 0.7;
     }
-    .purity-check-btn.loading svg {
-        animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
     .purity-result {
-        margin-top: 0.6rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        background: rgba(255, 255, 255, 0.05);
     }
     .purity-result.hidden {
         display: none;
     }
-    .purity-item {
-        display: flex;
-        align-items: center;
-        font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.8);
+    .ippure-card-link {
+        display: block;
     }
-    .purity-label {
-        min-width: 60px;
-        color: rgba(255, 255, 255, 0.7);
-        font-weight: 500;
+    .ippure-card-img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 0 0 6px 6px;
     }
-    .purity-value {
-        color: rgba(255, 255, 255, 0.9);
-    }
-    /* 纯净度分数颜色编码 */
-    .purity-value.score-good { color: #4ade80; }
-    .purity-value.score-medium { color: #facc15; }
-    .purity-value.score-bad { color: #f87171; }
-    /* 布尔值颜色 */
-    .purity-value.bool-yes { color: #4ade80; }
-    .purity-value.bool-no { color: #94a3b8; }
-    /* 图标颜色 */
-    .icon-score svg { color: #a78bfa; }
-    .icon-residential svg { color: #34d399; }
-    .icon-broadcast svg { color: #60a5fa; }
 </style>
 
 <script>
@@ -282,8 +225,6 @@ const style = Astro.props.style;
     const CDN_IMG_CF = '/cdn/cloudflare.svg';
     const CDN_IMG_EO = '/cdn/edgeone.png';
 
-    // 全局存储访客 IP（供纯净度检测使用）
-    let visitorIP: string | null = null;
 
     const checkCDN = async () => {
         const imgEl = document.getElementById('cdn-node') as HTMLImageElement;
@@ -520,7 +461,6 @@ const style = Astro.props.style;
         }
 
         if (finalData.ip) {
-            visitorIP = finalData.ip; // 保存 IP 供纯净度检测使用
             setInfo('ip-address', finalData.ip);
             setInfo('location', finalData.location || 'N/A');
             setInfo('isp', finalData.isp || 'N/A');
@@ -538,81 +478,53 @@ const style = Astro.props.style;
 
     fetchIpInfo();
 
-    // IP 纯净度检测功能
+    // IP 信息卡片切换显示
     const setupPurityCheck = () => {
         const btn = document.getElementById('ip-purity-btn') as HTMLButtonElement | null;
         const resultDiv = document.getElementById('ip-purity-result');
-        if (!btn || !resultDiv) return;
+        const cardImg = document.getElementById('ippure-card-img') as HTMLImageElement | null;
+        if (!btn || !resultDiv || !cardImg) return;
 
-        // 本地开发环境禁用检测
-        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        if (isLocalhost) {
+        const baseSrc = cardImg.dataset.src || 'https://my.ippure.com/v1/card';
+        let isExpanded = false;
+
+        // 图片加载完成事件
+        cardImg.addEventListener('load', () => {
+            btn.classList.remove('loading');
             const btnSpan = btn.querySelector('span');
-            if (btnSpan) btnSpan.textContent = '部署后可用';
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            btn.style.cursor = 'not-allowed';
-            return;
-        }
+            if (btnSpan && isExpanded) btnSpan.textContent = '收起 IP 信息卡';
+        });
 
-        btn.addEventListener('click', async () => {
-            // 防止重复点击
-            if (btn.classList.contains('loading')) return;
+        // 图片加载失败事件
+        cardImg.addEventListener('error', () => {
+            btn.classList.remove('loading');
+            const btnSpan = btn.querySelector('span');
+            if (btnSpan) btnSpan.textContent = '加载失败，点击重试';
+            isExpanded = false;
+            resultDiv.classList.add('hidden');
+            btn.classList.remove('expanded');
+        });
+
+        btn.addEventListener('click', () => {
+            if (btn.classList.contains('loading')) return; // 加载中禁止点击
             
-            btn.classList.add('loading');
-            const btnSpan = btn.querySelector('span');
-            if (btnSpan) btnSpan.textContent = '检测中...';
-
-            try {
-                // 使用本域边缘函数 API
-                const response = await fetch('/api/ip-purity');
-                if (!response.ok) throw new Error('API 请求失败');
+            isExpanded = !isExpanded;
+            
+            if (isExpanded) {
+                // 显示加载状态
+                btn.classList.add('loading');
+                const btnSpan = btn.querySelector('span');
+                if (btnSpan) btnSpan.textContent = '查询中...';
                 
-                const data = await response.json();
-                
-                // 更新纯净度分数 (fraudScore: 0-100, 越低越纯净)
-                const fraudScoreEl = document.getElementById('fraud-score');
-                if (fraudScoreEl && data.fraudScore !== undefined) {
-                    const score = data.fraudScore;
-                    const purityScore = 100 - score; // 转换为纯净度
-                    fraudScoreEl.textContent = `${purityScore}分`;
-                    fraudScoreEl.className = 'purity-value';
-                    if (purityScore >= 80) {
-                        fraudScoreEl.classList.add('score-good');
-                    } else if (purityScore >= 50) {
-                        fraudScoreEl.classList.add('score-medium');
-                    } else {
-                        fraudScoreEl.classList.add('score-bad');
-                    }
-                }
-
-                // 更新住宅 IP
-                const residentialEl = document.getElementById('is-residential');
-                if (residentialEl && data.isResidential !== undefined) {
-                    residentialEl.textContent = data.isResidential ? '是 ✓' : '否';
-                    residentialEl.className = 'purity-value ' + (data.isResidential ? 'bool-yes' : 'bool-no');
-                }
-
-                // 更新广播 IP
-                const broadcastEl = document.getElementById('is-broadcast');
-                if (broadcastEl && data.isBroadcast !== undefined) {
-                    broadcastEl.textContent = data.isBroadcast ? '是 ✓' : '否';
-                    broadcastEl.className = 'purity-value ' + (data.isBroadcast ? 'bool-yes' : 'bool-no');
-                }
-
-                // 显示结果
+                // 每次展开时加载新图片（添加时间戳防止缓存）
+                cardImg.src = `${baseSrc}?t=${Date.now()}`;
                 resultDiv.classList.remove('hidden');
-                
-                // 更新按钮状态
-                btn.classList.remove('loading');
-                if (btnSpan) btnSpan.textContent = '已检测 ✓';
-                btn.style.pointerEvents = 'none';
-                btn.style.opacity = '0.6';
-                
-            } catch (error) {
-                console.error('IP 纯净度检测失败:', error);
-                btn.classList.remove('loading');
-                if (btnSpan) btnSpan.textContent = '检测失败，点击重试';
+                btn.classList.add('expanded');
+            } else {
+                resultDiv.classList.add('hidden');
+                btn.classList.remove('expanded');
+                const btnSpan = btn.querySelector('span');
+                if (btnSpan) btnSpan.textContent = '查看 IP 信息卡';
             }
         });
     };
