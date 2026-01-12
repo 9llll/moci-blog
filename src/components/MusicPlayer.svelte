@@ -9,6 +9,8 @@
   let isInitialized = false; // 是否已初始化音频
   let isLoading = false; // 是否正在加载
   let checkboxElement: HTMLInputElement;
+  let isMobile = false; // 是否移动端视口
+  let pendingPlayRequest = false; // 移动端首点加载后自动播放
   let showLoadingToast = false; // 控制加载提示显示
   let showLoadedToast = false; // 控制加载完成提示显示
   let loadStartTime = 0; // 记录加载开始时间
@@ -21,7 +23,18 @@
   
   let currentSourceIndex = 0;
   
+  function updateIsMobile() {
+    if (typeof window !== 'undefined') {
+      isMobile = window.matchMedia('(max-width: 768px)').matches;
+    }
+  }
+
   onMount(() => {
+    updateIsMobile();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', updateIsMobile);
+    }
+
     audio = new Audio();
     // 懒加载：不立即加载音频文件
     
@@ -40,6 +53,22 @@
         setTimeout(() => {
           showLoadedToast = false;
         }, 1000);
+
+        // 移动端：用户首点后自动播放
+        if (pendingPlayRequest && isMobile) {
+          pendingPlayRequest = false;
+          isPlaying = true;
+          if (checkboxElement) {
+            checkboxElement.checked = true;
+          }
+          audio.play().catch(error => {
+            console.error('Failed to auto-play audio:', error);
+            if (checkboxElement) {
+              checkboxElement.checked = false;
+            }
+            isPlaying = false;
+          });
+        }
       }, minLoadTime);
     });
     
@@ -60,6 +89,9 @@
       if (audio) {
         audio.pause();
         audio.src = '';
+      }
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', updateIsMobile);
       }
     };
   });
@@ -85,6 +117,7 @@
       isLoading = false;
       showLoadingToast = false;
       showLoadedToast = false;
+      pendingPlayRequest = false;
       // 所有音频源都加载失败时重置checkbox
       if (checkboxElement) {
         checkboxElement.checked = false;
@@ -99,9 +132,12 @@
     if (!isInitialized) {
       loadAudioSource();
       
-      // 如果正在加载，阻止checkbox状态改变并等待加载完成
+      // 如果正在加载，移动端记下自动播放意图，桌面端阻止状态变化
       if (isLoading) {
-        target.checked = false;
+        pendingPlayRequest = isMobile;
+        if (!isMobile) {
+          target.checked = false;
+        }
         return;
       }
     }
@@ -597,19 +633,26 @@
       height: 11px;
     }
 
-    /* 移动端：通知贴在汉堡菜单整体下方 */
+    /* 移动端：通知底部居中，避免与汉堡面板重叠或被裁剪 */
     .music-loading-notification {
       position: fixed;
       top: auto;
-      bottom: 16px;
-      left: auto;
-      right: 16px;
-      min-width: 240px;
-      max-width: 280px;
-      width: auto;
+      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      width: min(520px, calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 28px));
+      min-width: 0;
+      max-width: 100%;
       margin: 0;
-      z-index: 10000;
+      z-index: 11000;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+      border-radius: var(--radius-large);
+    }
+
+    /* 移动端取消弹窗通知显示 */
+    .music-loading-notification {
+      display: none;
     }
 
     .loading-content {
