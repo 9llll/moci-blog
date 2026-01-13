@@ -3,7 +3,7 @@ name: Auto Merge Friends PR
 on:
   pull_request_target:
     paths:
-      - 'src/content/friends/*.json'
+      - "src/content/friends/*.json"
 
 permissions:
   contents: write
@@ -29,14 +29,12 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: |
@@ -50,10 +48,10 @@ jobs:
           # 获取变更文件名
           # 在 pull_request_target 中，我们比较 PR head 和 base
           CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
-          
+
           echo "Changed files list:"
           echo "$CHANGED_FILES"
-          
+
           # 检查是否有文件变更
           if [ -z "$CHANGED_FILES" ]; then
             echo "::error::No files changed found in the diff."
@@ -67,7 +65,7 @@ jobs:
               exit 1
             fi
           done
-          
+
           echo "Success: All changed files are valid."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
