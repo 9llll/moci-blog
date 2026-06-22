@@ -164,6 +164,115 @@ src/content/posts/
 - **博客日志**: 个人动态和想法
 - **工具推荐**: 实用工具介绍
 
+## 🧩 作品集页面编写方法
+
+作品集内容位于 `src/content/works/`，每个作品对应一个 Markdown 文件。文件名会成为访问路径，例如：
+
+```plaintext
+src/content/works/unity-skills.md
+```
+
+对应页面：
+
+```plaintext
+/works/unity-skills/
+```
+
+### 创建新作品
+
+直接在 `src/content/works/` 下新建 `.md` 文件：
+
+```plaintext
+src/content/works/my-project.md
+```
+
+### 作品 Front Matter
+
+```yaml
+---
+title: "作品名称"                         # 必填
+published: 2026-06-22T10:30:00           # 必填，发布时间
+updated: 2026-06-22T10:30:00             # 可选，更新时间
+description: "作品简介，显示在列表和详情页" # 推荐填写
+image: "/images/project-cover.webp"       # 推荐填写，列表封面
+tags: ["Unity", "AI", "Web"]              # 可选标签
+version: "v1.0.0"                         # 可选，项目版本
+architecture: "Astro + Svelte + R2"       # 可选，项目架构
+video: "https://example.com/demo.mp4"      # 可选，项目预览视频直链
+videoPoster: "/images/project-cover.webp" # 可选，视频封面
+featured: true                            # 可选，是否优先展示
+draft: false                              # 是否草稿
+lang: "zh_CN"                             # 语言
+---
+```
+
+> 页面展示时会使用中文标签，例如“项目版本”“项目架构”“项目介绍”；`version`、`architecture` 是数据字段名，写作时保持英文键名即可。
+
+### 视频规则
+
+`video` 是可选字段，不填也能正常展示作品。
+
+- 填写 `video`：作品列表展开后会显示视频播放器，支持浏览器原生播放和全屏。
+- 不填写 `video`：作品列表展开后只显示版本、架构、简介和“详细说明”按钮。
+- 推荐视频放在对象存储或 CDN，例如 R2、OSS、COS、Cloudflare Stream 等。
+- 不推荐把大视频放进仓库或构建产物，超过 20MB 的视频尤其建议使用外链。
+- 视频直链建议使用 `mp4` 或 `webm`，并确保服务端支持 HTTPS、正确 `Content-Type` 和 Range 请求。
+
+### 作品正文
+
+Front Matter 下方就是详情页正文，写法和博客文章一致，支持标题、图片、代码块、表格、GitHub 卡片等。
+
+推荐结构：
+
+```markdown
+## 项目概览
+
+简要说明项目是什么、解决什么问题。
+
+## 为什么要做
+
+说明需求背景、痛点和目标用户。
+
+## 核心能力
+
+- 能力一
+- 能力二
+- 能力三
+
+## 架构说明
+
+说明前端、后端、服务、存储、部署或 Unity/AI 端的整体结构。
+
+## 使用限制
+
+说明适用边界、依赖环境或注意事项。
+
+## 项目地址
+
+::github{repo="用户名/仓库名"}
+```
+
+### 图片和封面
+
+作品封面推荐放在 `public/images/`：
+
+```yaml
+image: "/images/my-project-cover.webp"
+videoPoster: "/images/my-project-cover.webp"
+```
+
+正文图片同样可以使用：
+
+```markdown
+![项目界面](/images/my-project-screen.webp)
+```
+
+### 草稿和排序
+
+- `draft: true`：生产环境不显示。
+- `featured: true`：在作品列表中优先展示。
+- 同为精选或同为普通作品时，按 `published` 时间从新到旧排序。
+
 ## 🔄 更新流程
 
 ### 1. 写作流程

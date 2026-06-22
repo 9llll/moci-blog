@@ -27,6 +27,21 @@ export async function getSortedPosts() {
 	return sorted;
 }
 
+export async function getSortedWorks() {
+	const allWorks = await getCollection("works", ({ data }) => {
+		return import.meta.env.PROD ? data.draft !== true : true;
+	});
+
+	return allWorks.sort((a, b) => {
+		if (a.data.featured !== b.data.featured) {
+			return a.data.featured ? -1 : 1;
+		}
+		const dateA = new Date(a.data.published);
+		const dateB = new Date(b.data.published);
+		return dateA > dateB ? -1 : 1;
+	});
+}
+
 export type Tag = {
 	name: string;
 	count: number;

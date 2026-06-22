@@ -1,20 +1,46 @@
 ---
+import WorksAccordion, { type WorkItem } from "@components/works/WorksAccordion.svelte";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getSortedWorks } from "@utils/content-utils";
+import { getWorkUrlBySlug, url } from "@utils/url-utils";
+import { formatDateToYYYYMMDD } from "@utils/date-utils";
+
+const works = await getSortedWorks();
+
+function resolveAsset(src: string) {
+	if (!src) return "";
+	return src.startsWith("/") ? url(src) : src;
+}
+
+const workItems: WorkItem[] = works.map((work) => ({
+	slug: work.slug,
+	title: work.data.title,
+	url: getWorkUrlBySlug(work.slug),
+	published: formatDateToYYYYMMDD(work.data.published),
+	updated: work.data.updated ? formatDateToYYYYMMDD(work.data.updated) : undefined,
+	description: work.data.description,
+	image: resolveAsset(work.data.image),
+	tags: work.data.tags,
+	version: work.data.version,
+	architecture: work.data.architecture,
+	video: work.data.video,
+	videoPoster: work.data.videoPoster
+		? resolveAsset(work.data.videoPoster)
+		: resolveAsset(work.data.image),
+	featured: work.data.featured,
+}));
 ---
 
 <MainGridLayout
-  title="作品集 - 流转星(Betsy)"
-  description="流转星(Betsy)的作品集合，涵盖 Unity 开发、网站项目、AI 应用等创作。"
+	title="作品集 - 流转星(Betsy)"
+	description="流转星(Betsy)的作品集合，涵盖 Unity 开发、网站项目、AI 应用等创作。"
 >
-  <h1 class="text-3xl font-bold mb-6 text-black/90 dark:text-white/90">作品集</h1>
+	<section class="mb-6">
+		<h1 class="mb-3 text-3xl font-bold text-black/90 dark:text-white/90">作品集</h1>
+		<p class="max-w-2xl text-sm leading-relaxed text-black/60 dark:text-white/60">
+			项目预览、版本、架构与完整说明集中在这里。展开项目可直接播放预览视频，进入详情页可查看实现记录。
+		</p>
+	</section>
 
-  <div class="card-base rounded-[var(--radius-large)] p-8 md:p-12 text-center">
-    <div class="text-5xl md:text-6xl mb-6">🚧</div>
-    <h2 class="text-xl md:text-2xl font-bold mb-3 text-[var(--primary)]">作品集筹备中</h2>
-    <p class="text-sm md:text-base text-black/60 dark:text-white/60 max-w-md mx-auto leading-relaxed">
-      这里将展示我的 Unity 项目、网站作品与 AI 应用等创作。
-      <br />
-      内容正在整理中，敬请期待。
-    </p>
-  </div>
+	<WorksAccordion works={workItems} client:load />
 </MainGridLayout>

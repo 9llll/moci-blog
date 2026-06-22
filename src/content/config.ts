@@ -23,6 +23,24 @@ const postsCollection = defineCollection({
 	}),
 });
 
+const worksCollection = defineCollection({
+	schema: z.object({
+		title: z.string(),
+		published: z.date(),
+		updated: z.date().optional(),
+		draft: z.boolean().optional().default(false),
+		description: z.string().optional().default(""),
+		image: z.string().optional().default(""),
+		tags: z.array(z.string()).optional().default([]),
+		lang: z.string().optional().default(""),
+		version: z.string().optional().default(""),
+		architecture: z.string().optional().default(""),
+		video: z.string().optional().default(""),
+		videoPoster: z.string().optional().default(""),
+		featured: z.boolean().optional().default(false),
+	}),
+});
+
 const specCollection = defineCollection({
 	schema: z.object({
 		title: z.string().optional(),
@@ -53,6 +71,7 @@ const friendsCollection = defineCollection({
 
 export const collections = {
 	posts: postsCollection,
+	works: worksCollection,
 	spec: specCollection,
 	assets: assetsCollection,
 	friends: friendsCollection,
