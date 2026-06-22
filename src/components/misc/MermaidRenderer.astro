@@ -128,11 +128,11 @@ const { prerenderAll = false } = Astro.props;
                     var ecParent = preNode.closest('.expressive-code');
                     if (ecParent) toReplace = ecParent;
 
-                    // 关键修复：Expressive Code 会把“全页共享”的样式表 <link> 与初始化
-                    // <script> 注入到页面第一个 .expressive-code 包裹元素内部。当该首个
+                    // 关键修复：Expressive Code 会把“全页共享”的样式表 link 标签与初始化
+                    // script 标签注入到页面第一个 .expressive-code 包裹元素内部。当该首个
                     // 代码块恰好是 Mermaid 时，直接整块替换会连这份全局样式表一起删掉，
                     // 导致全页其它代码块的 EC 行号 grid 布局失效。替换前先把这些全局资源
-                    // 转移到 <head> 保住。
+                    // 转移到 head 保住。
                     var ecAssets = toReplace.querySelectorAll('link[rel="stylesheet"], style, script');
                     for (var a = 0; a < ecAssets.length; a++) {
                         document.head.appendChild(ecAssets[a]);
