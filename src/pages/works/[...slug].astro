@@ -4,6 +4,7 @@ import { Icon } from "astro-icon/components";
 import type { CollectionEntry } from "astro:content";
 import Markdown from "@components/misc/Markdown.astro";
 import ImageWrapper from "@components/misc/ImageWrapper.astro";
+import MermaidRenderer from "@components/misc/MermaidRenderer.astro";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedWorks } from "@utils/content-utils";
 import { getDir } from "@utils/url-utils";
@@ -123,5 +124,6 @@ const jsonLd = {
 		<Markdown class="mb-2 markdown-content">
 			<Content />
 		</Markdown>
+		<MermaidRenderer />
 	</article>
 </MainGridLayout>

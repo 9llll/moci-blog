@@ -1,0 +1,232 @@
+---
+const { prerenderAll = false } = Astro.props;
+---
+
+<!-- Mermaid.js 集成 (异步加载优化版) -->
+<script is:inline>
+    // 异步加载 Mermaid，避免阻塞页面渲染
+    (function() {
+        // 防止重复加载
+        if (document.querySelector('script[src*="mermaid"]')) return;
+        var script = document.createElement('script');
+        script.src = 'https://fastly.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+        script.async = true;
+        document.head.appendChild(script);
+    })();
+</script>
+<script is:inline define:vars={{ prerenderAll }}>
+    // 使用 IIFE 避免 Swup 重新执行时变量重复声明
+    (function() {
+        'use strict';
+
+        // ===== prerenderAll 模式：预渲染所有内容 =====
+        if (prerenderAll) {
+            // 1. 禁用图片懒加载
+            document.querySelectorAll('img[loading="lazy"]').forEach(function(img) {
+                img.removeAttribute('loading');
+                img.setAttribute('loading', 'eager');
+            });
+
+            // 2. 临时展开所有 details，强制浏览器渲染代码块、公式等
+            var closedDetails = [];
+            document.querySelectorAll('details:not([open])').forEach(function(d) {
+                closedDetails.push(d);
+                d.open = true;
+            });
+
+            // 3. 等待浏览器完成布局计算后恢复折叠状态
+            if (closedDetails.length > 0) {
+                // 使用 requestAnimationFrame 确保渲染完成
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                        closedDetails.forEach(function(d) {
+                            d.open = false;
+                        });
+                    });
+                });
+            }
+        }
+
+        // ===== 资源管理 =====
+        window._postPageResources = window._postPageResources || {
+            observer: null,
+            timeoutId: null,
+            cleanupRegistered: false
+        };
+
+        var resources = window._postPageResources;
+
+        // 清理函数
+        function cleanupResources() {
+            if (resources.observer) {
+                resources.observer.disconnect();
+                resources.observer = null;
+            }
+            if (resources.timeoutId) {
+                clearTimeout(resources.timeoutId);
+                resources.timeoutId = null;
+            }
+        }
+
+        // 注册清理事件（只注册一次）
+        if (!resources.cleanupRegistered) {
+            document.addEventListener('swup:willReplaceContent', cleanupResources);
+            resources.cleanupRegistered = true;
+        }
+
+        // ===== Mermaid 初始化 =====
+        function initMermaid() {
+            if (typeof mermaid === 'undefined') {
+                setTimeout(initMermaid, 100);
+                return;
+            }
+
+            // 仅当 prerenderAll=true 时，临时展开所有 details 预渲染
+            var closedDetails = [];
+            if (prerenderAll) {
+                document.querySelectorAll('details:not([open])').forEach(function(d) {
+                    closedDetails.push(d);
+                    d.open = true;
+                });
+            }
+
+            var mermaidBlocks = document.querySelectorAll('pre[data-language="mermaid"]');
+            if (mermaidBlocks.length === 0) {
+                // 恢复折叠状态
+                closedDetails.forEach(function(d) { d.open = false; });
+                return;
+            }
+
+            var isDarkMode = document.documentElement.classList.contains('dark');
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: isDarkMode ? 'dark' : 'default',
+                securityLevel: 'loose',
+                fontFamily: 'inherit',
+            });
+
+            // 串行渲染
+            (async function() {
+                for (var index = 0; index < mermaidBlocks.length; index++) {
+                    var preNode = mermaidBlocks[index];
+                    var code = '';
+                    var codeLines = preNode.querySelectorAll('.ec-line .code');
+                    if (codeLines.length > 0) {
+                        code = Array.from(codeLines)
+                            .map(function(line) { return line.textContent || ''; })
+                            .join('\n')
+                            .trim();
+                    } else {
+                        code = (preNode.textContent || preNode.innerText).trim();
+                    }
+
+                    if (!code) continue;
+
+                    var toReplace = preNode;
+                    var figureParent = preNode.closest('figure.frame');
+                    if (figureParent) toReplace = figureParent;
+                    var ecParent = preNode.closest('.expressive-code');
+                    if (ecParent) toReplace = ecParent;
+
+                    // 关键修复：Expressive Code 会把“全页共享”的样式表 <link> 与初始化
+                    // <script> 注入到页面第一个 .expressive-code 包裹元素内部。当该首个
+                    // 代码块恰好是 Mermaid 时，直接整块替换会连这份全局样式表一起删掉，
+                    // 导致全页其它代码块的 EC 行号 grid 布局失效。替换前先把这些全局资源
+                    // 转移到 <head> 保住。
+                    var ecAssets = toReplace.querySelectorAll('link[rel="stylesheet"], style, script');
+                    for (var a = 0; a < ecAssets.length; a++) {
+                        document.head.appendChild(ecAssets[a]);
+                    }
+
+                    var id = 'mermaid-' + index + '-' + Date.now();
+                    var container = document.createElement('div');
+                    container.id = id;
+                    container.className = 'mermaid';
+                    container.setAttribute('data-processed', 'false');
+                    container.style.cssText = 'display:flex;justify-content:center;margin:2rem 0;opacity:0;transition:opacity 0.3s ease';
+                    container.setAttribute('data-mermaid-src', code);
+
+                    toReplace.parentNode.replaceChild(container, toReplace);
+
+                    try {
+                        var result = await mermaid.render(id + '-svg', code);
+                        container.innerHTML = result.svg;
+                        container.style.opacity = '1';
+                    } catch (error) {
+                        console.error('[Mermaid] Render failed:', error);
+                        container.innerHTML = '<div style="color:red;padding:1rem;border:1px solid red;border-radius:0.5rem">Mermaid 渲染失败: ' + error.message + '</div>';
+                        container.style.opacity = '1';
+                    }
+                }
+
+                // 所有 Mermaid 渲染完成后，恢复 details 的折叠状态
+                closedDetails.forEach(function(d) { d.open = false; });
+            })();
+        }
+
+        // 处理 details 标签中 Mermaid 的延迟渲染（仅当 prerenderAll=false 时生效）
+        function handleDetailsMermaid() {
+            if (prerenderAll) return; // 预渲染模式下不需要
+
+            document.querySelectorAll('details').forEach(function(details) {
+                if (details.dataset.mermaidBound) return;
+                details.dataset.mermaidBound = '1';
+                details.addEventListener('toggle', function() {
+                    if (details.open) {
+                        var unrendered = details.querySelectorAll('pre[data-language="mermaid"]');
+                        if (unrendered.length > 0) {
+                            initMermaid();
+                        }
+                    }
+                });
+            });
+        }
+
+        // 主题切换监听
+        function setupThemeObserver() {
+            // 先清理旧的
+            cleanupResources();
+
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class' && mutation.target === document.documentElement) {
+                        // 确保 mermaid 已加载
+                        if (typeof mermaid === 'undefined') return;
+
+                        var isDark = document.documentElement.classList.contains('dark');
+                        mermaid.initialize({ theme: isDark ? 'dark' : 'default' });
+
+                        document.querySelectorAll('.mermaid[data-mermaid-src]').forEach(async function(container) {
+                            var code = container.getAttribute('data-mermaid-src');
+                            if (code) {
+                                try {
+                                    var result = await mermaid.render(container.id + '-rerender-' + Date.now(), code);
+                                    container.innerHTML = result.svg;
+                                } catch (e) {
+                                    console.error('[Mermaid] Re-render failed:', e);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+            observer.observe(document.documentElement, { attributes: true });
+            resources.observer = observer;
+        }
+
+        // 初始化
+        initMermaid();
+        handleDetailsMermaid();
+        setupThemeObserver();
+
+        // Swup 兼容（只注册一次）
+        if (!window._mermaidSwupRegistered) {
+            document.addEventListener('swup:contentReplaced', function() {
+                initMermaid();
+                handleDetailsMermaid();
+                setupThemeObserver();
+            });
+            window._mermaidSwupRegistered = true;
+        }
+    })();
+</script>
