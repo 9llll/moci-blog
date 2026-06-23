@@ -29,12 +29,6 @@ lang: "zh_CN"
 | AI | 三档难度（随机 / 克制贪心 / 期望胜率最大化） |
 | 平台 | Windows + Android，鼠标 / 触屏统一适配 |
 
-## 为什么要做
-
-很多 Unity 小项目都把逻辑一股脑塞进 `MonoBehaviour`：状态、规则、UI、动画揉在 `Update()` 里，改一条规则要翻遍全场景，双端各算一次很快就不同步，测试更是无从下手。
-
-烛札想验证的命题是：**一个体量不大的对战游戏，也能把工程纪律做到位。** 于是它刻意维持两条边界——**「Unity 边界层 / 纯逻辑层」** 与 **「AOT 层 / 热更层」**，让核心逻辑可测、可热更、可防作弊，而平台差异、JNI、网络 I/O 这些"脏活"全部被隔离在边界处，不向逻辑层蔓延。
-
 ## 核心能力
 
 | 能力 | 一句话说明 |
@@ -172,14 +166,6 @@ float avg = EvaluateExpectedScore(myCard.cardType, myCard.powerValue);  // Σ Re
 
 <!-- TODO(Besty): 把试玩/下载直链填入下方 ::link 的 url 字段（Windows / Android 体验包） -->
 ::link{url="#" title="烛札 · 试玩下载（Windows / Android）" description="体验包下载。单人模式直接开玩；多人对战需局域网内自建 CDN 后联机。"}
-
-## 使用限制
-
-- 项目目前**未公开源码**（私有仓库），文中代码为关键设计节选；
-- 双热更依赖局域网内**自建 CDN**，需按 `{host}/CDN/{platform}/` 固定目录部署构建产物；
-- Android 端收发 UDP 广播需获取 `MulticastLock`，否则 Wi-Fi 节能会静默丢弃局域网发现包；
-- 采用 Host-Client 拓扑，**房主断线即全场断连**，不支持 Host 迁移；
-- 仍处 **v0.0.4 Beta**，玩法与数值仍在迭代。
 
 ## 延伸阅读
 

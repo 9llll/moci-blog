@@ -14,7 +14,7 @@ version: Unity 2022.3.62f2 LTS · URP 14.0.12 · Cinemachine 2.10.7
 architecture: 组件解耦 + 事件驱动 + 数据驱动 · 4 场景多模块导航
 video: ""
 videoPoster: "/images/smart-campus-cover.webp"
-featured: true
+featured: false
 draft: false
 lang: "zh_CN"
 ---
@@ -30,12 +30,6 @@ lang: "zh_CN"
 | 业务场景 | 4 个（校园 / 宿舍 / 教室 / 餐厅） |
 | 相机状态 | 2 主状态（Initial / FreeFly）+ FreeFly 内 2 子模式（漫游 / 环绕） |
 | 导航模块 | 6 大父模块 + 若干子模块（数据驱动） |
-
-## 为什么要做
-
-传统校园导览要么是静态图册，要么是预录视频——用户无法自主探索。本项目尝试回答一个问题：**能不能用一套可扩展的工程框架，把真实校园的空间感与智慧设备的信息密度都搬进实时 3D？**
-
-工程上的收益是双向的：展示侧有设备级交互信息面板、六大业务模块跨场景导航、SSRR2 屏幕空间镜面反射，共同构建沉浸式体验；工程侧则沉淀出 Cinemachine 状态机、ScriptableObject 数据驱动、事件解耦、自定义编辑器工具等一套可复用的 Unity 客户端架构模板。
 
 <!-- 建议在此放图:交互演示截图——点击设备后弹出信息面板与高亮描边效果 -->
 
