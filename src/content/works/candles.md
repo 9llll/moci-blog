@@ -164,7 +164,7 @@ float avg = EvaluateExpectedScore(myCard.cardType, myCard.powerValue);  // Σ Re
 
 ## 试玩与下载
 
-当前版本 **v1.1.0 Beta**（by MicoStar）。单人模式可直接体验三档 AI；局域网双人对战需在同一内网内按固定目录模型部署 CDN 后联机。
+当前版本 **v1.1.0 Beta**（by MicoStar）。单人模式可直接体验三档 AI；多人对战需要在局域网内or内网穿透后联机。
 
 ::link{url="https://candles.micostar.cc" title="烛札 · 试玩下载（Windows / Android）" description="体验包下载。单人模式直接开玩；多人对战需局域网or内网穿透联机。"}
 
