@@ -62,7 +62,7 @@ sequenceDiagram
     Client->>Client: xrSharedSpaceOrigin.SetPositionAndRotation
 ```
 
-![PICO MR 共享空间锚点真机对齐效果](/images/pico-mr-anchor1.jpg)
+![PICO MR 共享空间锚点真机对齐效果](/images/pico-mr-anchor1.webp)
 
 ## 对齐的核心：一次把世界搬正
 

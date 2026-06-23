@@ -3,12 +3,12 @@ title: "烛札 · 双人对战卡牌"
 published: 2026-06-22T15:00:00
 updated: 2026-06-22T15:00:00
 description: "一款 Unity 6 双人回合制对战卡牌游戏——剪刀石头布式克制，局域网联机 + 三档 AI 对战，内建 HybridCLR 代码热更 + YooAsset 资源热更双链路，目标 Windows + Android。工程上刻意把战斗逻辑下沉为零 Unity 依赖的纯 C# 可测层，服务端权威 + 确定性重演从结构上防作弊。"
-image: "/images/zhuzha-cover.jpg"
+image: "/images/zhuzha-cover.webp"
 tags: ["Unity", "C#", "HybridCLR", "YooAsset", "热更新", "Netcode", "CDN"]
 version: "Unity 6000.3.9f1 · URP 17.3 · HybridCLR v8.12.0 · YooAsset 2.3.19 · NGO 2.9.1"
 architecture: "MB 边界层 + 纯 C# 逻辑层 · 代码热更 + 资源热更双链路 · 服务端权威 · ~9651 行 / 74 脚本 / 12 模块"
 video: ""
-videoPoster: "/images/zhuzha-cover.jpg"
+videoPoster: "/images/zhuzha-cover.webp"
 featured: true
 draft: false
 lang: "zh_CN"
@@ -94,7 +94,7 @@ string GetRemoteMainURL(string fileName) => $"{_hostServerIP}/CDN/{_platformName
 
 **③ 纯 C# 补丁状态机 + 引用计数释放。** 补丁流程（初始化→请求版本→更新清单→清缓存→下载）是个不继承 `MonoBehaviour`、不持有任何 UI 引用的纯 C# 状态机，所有进度通过静态事件总线广播，`LoadingScreenUI` 只是个纯订阅方；资源侧则用引用计数缓存，重复预加载只加计数，降至 0 才真正释放。
 
-![烛札 启动时的资源补丁 / 热更加载界面](/images/zhuzha-loading.jpg)
+![烛札 启动时的资源补丁 / 热更加载界面](/images/zhuzha-loading.webp)
 
 ## 关键设计二 · MB 边界层 + 纯 C# 逻辑层
 
@@ -128,9 +128,9 @@ public void SubmitCardForAI(...) => _session.SubmitCard(...);   // AI：Host 本
 
 局域网房间发现走"UDP 信标广播 + 后台 async 接收 + 主线程无锁出队"；头像因超 MTU 改为按需单播分片再重组。
 
-![局域网房间列表：信标广播发现 + 实时 ping + 头像按需拉取](/images/zhuzha-lan-rooms.jpg)
+![局域网房间列表：信标广播发现 + 实时 ping + 头像按需拉取](/images/zhuzha-lan-rooms.webp)
 
-![局内对战 HUD：血量 / 等级经 NetworkVariable 单向下行，UI 订阅 OnValueChanged 被动刷新](/images/zhuzha-hud.jpg)
+![局内对战 HUD：血量 / 等级经 NetworkVariable 单向下行，UI 订阅 OnValueChanged 被动刷新](/images/zhuzha-hud.webp)
 
 ## 关键设计四 · 三档 AI 决策
 
@@ -143,7 +143,7 @@ float avg = EvaluateExpectedScore(myCard.cardType, myCard.powerValue);  // Σ Re
 
 难度下拉框还做了**零硬编码绑定**：`Awake` 时反射 `Difficulty` 枚举自动生成选项，加一档 Lv4 只需改枚举 + 一行 `GetLabel`，UI 自动跟随、上界自动 Clamp。
 
-![三档 AI 难度选择：选项由枚举反射生成，新增难度 UI 零改动](/images/zhuzha-difficulty.jpg)
+![三档 AI 难度选择：选项由枚举反射生成，新增难度 UI 零改动](/images/zhuzha-difficulty.webp)
 
 ## 技术栈
 
