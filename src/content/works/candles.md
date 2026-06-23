@@ -29,6 +29,8 @@ lang: "zh_CN"
 | AI | 三档难度（随机 / 克制贪心 / 期望胜率最大化） |
 | 平台 | Windows + Android，鼠标 / 触屏统一适配 |
 
+::link{url="https://candles.micostar.cc" title="烛札 · 试玩下载（Windows / Android）" description="体验包下载。单人模式直接开玩；多人对战需局域网or内网穿透联机。"}
+
 ## 核心能力
 
 | 能力 | 一句话说明 |
@@ -164,8 +166,7 @@ float avg = EvaluateExpectedScore(myCard.cardType, myCard.powerValue);  // Σ Re
 
 当前版本 **v1.1.0 Beta**（by MicoStar）。单人模式可直接体验三档 AI；局域网双人对战需在同一内网内按固定目录模型部署 CDN 后联机。
 
-<!-- TODO(Besty): 把试玩/下载直链填入下方 ::link 的 url 字段（Windows / Android 体验包） -->
-::link{url="#" title="烛札 · 试玩下载（Windows / Android）" description="体验包下载。单人模式直接开玩；多人对战需局域网内自建 CDN 后联机。"}
+::link{url="https://candles.micostar.cc" title="烛札 · 试玩下载（Windows / Android）" description="体验包下载。单人模式直接开玩；多人对战需局域网or内网穿透联机。"}
 
 ## 延伸阅读
 
