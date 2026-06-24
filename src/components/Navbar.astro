@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { navBarConfig, siteConfig } from "../config";
 import { LinkPresets } from "../constants/link-presets";
-import { LinkPreset, type NavBarLink, type NavBarGroup } from "../types/config";
+import { LinkPreset, type NavBarGroup, type NavBarLink } from "../types/config";
 import { url } from "../utils/url-utils";
 
 import MusicPlayer from "./MusicPlayer.svelte";
@@ -18,7 +18,9 @@ function resolveLink(item: NavBarLink | LinkPreset): NavBarLink {
 	return typeof item === "number" ? LinkPresets[item] : item;
 }
 
-function isGroup(item: NavBarLink | LinkPreset | NavBarGroup): item is NavBarGroup {
+function isGroup(
+	item: NavBarLink | LinkPreset | NavBarGroup,
+): item is NavBarGroup {
 	return typeof item === "object" && "children" in item;
 }
 
@@ -26,7 +28,7 @@ function isResolvedGroup(item: NavItem): item is ResolvedNavBarGroup {
 	return "children" in item;
 }
 
-const navItems: NavItem[] = navBarConfig.links.map(item => {
+const navItems: NavItem[] = navBarConfig.links.map((item) => {
 	if (isGroup(item)) {
 		return { name: item.name, children: item.children.map(resolveLink) };
 	}

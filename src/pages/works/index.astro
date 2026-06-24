@@ -1,9 +1,11 @@
 ---
-import WorksAccordion, { type WorkItem } from "@components/works/WorksAccordion.svelte";
+import WorksAccordion, {
+	type WorkItem,
+} from "@components/works/WorksAccordion.svelte";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedWorks } from "@utils/content-utils";
-import { getWorkUrlBySlug, url } from "@utils/url-utils";
 import { formatDateToYYYYMMDD } from "@utils/date-utils";
+import { url, getWorkUrlBySlug } from "@utils/url-utils";
 
 const works = await getSortedWorks();
 
@@ -17,7 +19,9 @@ const workItems: WorkItem[] = works.map((work) => ({
 	title: work.data.title,
 	url: getWorkUrlBySlug(work.slug),
 	published: formatDateToYYYYMMDD(work.data.published),
-	updated: work.data.updated ? formatDateToYYYYMMDD(work.data.updated) : undefined,
+	updated: work.data.updated
+		? formatDateToYYYYMMDD(work.data.updated)
+		: undefined,
 	description: work.data.description,
 	image: resolveAsset(work.data.image),
 	tags: work.data.tags,

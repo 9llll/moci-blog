@@ -1,36 +1,38 @@
 <script lang="ts">
-	import Icon from "@iconify/svelte";
+import Icon from "@iconify/svelte";
 
-	export type WorkItem = {
-		slug: string;
-		title: string;
-		url: string;
-		published: string;
-		updated?: string;
-		description: string;
-		image: string;
-		tags: string[];
-		version: string;
-		architecture: string;
-		video: string;
-		videoPoster: string;
-		featured: boolean;
-	};
+export type WorkItem = {
+	slug: string;
+	title: string;
+	url: string;
+	published: string;
+	updated?: string;
+	description: string;
+	image: string;
+	tags: string[];
+	version: string;
+	architecture: string;
+	video: string;
+	videoPoster: string;
+	featured: boolean;
+};
 
-	type Props = {
-		works: WorkItem[];
-	};
+type Props = {
+	works: WorkItem[];
+};
 
-	let { works }: Props = $props();
-	let openSlug = $state("");
+let { works }: Props = $props();
+let openSlug = $state("");
 
-	function toggle(slug: string) {
-		const nextSlug = openSlug === slug ? "" : slug;
-		document.querySelectorAll<HTMLVideoElement>(".work-preview-video").forEach((video) => {
+function toggle(slug: string) {
+	const nextSlug = openSlug === slug ? "" : slug;
+	document
+		.querySelectorAll<HTMLVideoElement>(".work-preview-video")
+		.forEach((video) => {
 			video.pause();
 		});
-		openSlug = nextSlug;
-	}
+	openSlug = nextSlug;
+}
 </script>
 
 {#if works.length > 0}
@@ -115,8 +117,14 @@
 										controls
 										playsinline
 										preload="metadata"
+										data-video-ready="false"
+										onloadedmetadata={(event) => {
+											const video = event.currentTarget;
+											video.dataset.videoReady = "true";
+										}}
 										onerror={(event) => {
 											const video = event.currentTarget;
+											if (video.dataset.videoReady === "true") return;
 											video.classList.add("hidden");
 											const overlay = video.nextElementSibling as HTMLElement | null;
 											if (overlay) overlay.style.display = "flex";

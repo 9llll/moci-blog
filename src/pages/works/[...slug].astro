@@ -1,15 +1,15 @@
 ---
 import path from "node:path";
-import { Icon } from "astro-icon/components";
 import type { CollectionEntry } from "astro:content";
-import Markdown from "@components/misc/Markdown.astro";
+import { profileConfig, siteConfig } from "@/config";
 import ImageWrapper from "@components/misc/ImageWrapper.astro";
+import Markdown from "@components/misc/Markdown.astro";
 import MermaidRenderer from "@components/misc/MermaidRenderer.astro";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedWorks } from "@utils/content-utils";
-import { getDir } from "@utils/url-utils";
 import { formatDateToYYYYMMDD } from "@utils/date-utils";
-import { profileConfig, siteConfig } from "@/config";
+import { getDir } from "@utils/url-utils";
+import { Icon } from "astro-icon/components";
 
 export async function getStaticPaths() {
 	const works = await getSortedWorks();
@@ -37,7 +37,9 @@ const jsonLd = {
 	inLanguage: entry.data.lang
 		? entry.data.lang.replace("_", "-")
 		: siteConfig.lang.replace("_", "-"),
-	...(entry.data.image && { image: new URL(entry.data.image, Astro.site).href }),
+	...(entry.data.image && {
+		image: new URL(entry.data.image, Astro.site).href,
+	}),
 	...(entry.data.video && { video: entry.data.video }),
 };
 ---
@@ -90,17 +92,17 @@ const jsonLd = {
 		{entry.data.video ? (
 			<div class="relative mb-8 aspect-video overflow-hidden rounded-xl bg-black">
 				<video
-					class="aspect-video w-full bg-black object-contain"
+					class="work-detail-video aspect-video w-full bg-black object-contain"
+					data-video-ready="false"
 					src={entry.data.video}
 					poster={entry.data.videoPoster || entry.data.image}
 					controls
 					playsinline
 					preload="metadata"
-					onerror="this.classList.add('hidden'); this.nextElementSibling.style.display='flex';"
 				>
 					当前浏览器不支持视频播放。
 				</video>
-				<div class="absolute inset-0 flex items-center justify-center p-4" style="display: none;">
+				<div class="video-error-overlay absolute inset-0 flex items-center justify-center p-4" style="display: none;">
 					<div class="flex items-start gap-2 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
 						<Icon name="material-symbols:info-outline-rounded" class="mt-0.5 flex-shrink-0 text-base" />
 						<span>当前视频托管于腾讯云 COS，仅支持中国网络访问。如无法播放，请更换中国网络查看。</span>
@@ -133,4 +135,35 @@ const jsonLd = {
 		</Markdown>
 		<MermaidRenderer />
 	</article>
+
+	<script is:inline>
+		(function setupWorkVideo() {
+			function bindVideo(video) {
+				if (!video || video.dataset.bound === "true") return;
+				video.dataset.bound = "true";
+				video.addEventListener("loadedmetadata", () => {
+					video.dataset.videoReady = "true";
+				});
+				video.addEventListener("error", () => {
+					if (video.dataset.videoReady === "true") return;
+					video.classList.add("hidden");
+					const overlay = video.parentElement?.querySelector(".video-error-overlay");
+					if (overlay) overlay.style.display = "flex";
+				});
+			}
+
+			document.querySelectorAll(".work-detail-video").forEach(bindVideo);
+		})();
+
+		document.addEventListener("swup:contentReplaced", function resetWorkVideo() {
+			document.querySelectorAll(".work-detail-video").forEach((video) => {
+				video.dataset.bound = "";
+				video.dataset.videoReady = "false";
+				video.classList.remove("hidden");
+				const overlay = video.parentElement?.querySelector(".video-error-overlay");
+				if (overlay) overlay.style.display = "none";
+			});
+			setupWorkVideo();
+		});
+	</script>
 </MainGridLayout>
