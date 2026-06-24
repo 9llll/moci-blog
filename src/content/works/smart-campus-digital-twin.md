@@ -3,7 +3,7 @@ title: Unity 智慧校园数字孪生系统
 published: 2026-06-22T14:00:00
 updated: 2026-06-22T14:00:00
 description: 基于 Unity 2022 LTS + URP 的 3D 数字孪生/可视化系统，实现校园建筑与智慧设备的三维还原、Cinemachine 双状态相机、物体高亮与观察逻辑、ScriptableObject 数据驱动导航、SSRR2 屏幕空间反射等核心能力。
-image: "/images/smart-campus-cover.webp"
+image: "/images/zhschool.webp"
 tags:
   - Unity
   - URP
@@ -12,8 +12,8 @@ tags:
   - ScriptableObject
 version: Unity 2022.3.62f2 LTS · URP 14.0.12 · Cinemachine 2.10.7
 architecture: 组件解耦 + 事件驱动 + 数据驱动 · 4 场景多模块导航
-video: ""
-videoPoster: "/images/smart-campus-cover.webp"
+video: "https://coscandles.micostar.cc/zhschool.mp4"
+videoPoster: "/images/zhschool.webp"
 featured: false
 draft: false
 lang: "zh_CN"
