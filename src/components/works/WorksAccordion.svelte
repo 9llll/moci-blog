@@ -107,7 +107,7 @@
 					<div class="min-h-0 overflow-hidden">
 						{#if work.video}
 							<div class="grid gap-5 border-t border-[var(--line-divider)] p-4 md:grid-cols-[minmax(0,1.45fr)_minmax(16rem,0.75fr)] md:p-5">
-								<div class="relative overflow-hidden rounded-xl bg-black">
+								<div class="relative aspect-video overflow-hidden rounded-xl bg-black">
 									<video
 										class="work-preview-video aspect-video h-full w-full bg-black object-contain"
 										src={work.video}
@@ -115,9 +115,21 @@
 										controls
 										playsinline
 										preload="metadata"
+										onerror={(event) => {
+											const video = event.currentTarget;
+											video.classList.add("hidden");
+											const overlay = video.nextElementSibling as HTMLElement | null;
+											if (overlay) overlay.style.display = "flex";
+										}}
 									>
 										当前浏览器不支持视频播放。
 									</video>
+									<div class="absolute inset-0 flex items-center justify-center p-4" style="display: none;">
+										<div class="flex items-start gap-2 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+											<Icon icon="material-symbols:info-outline-rounded" class="mt-0.5 flex-shrink-0 text-base" />
+											<span>当前视频托管于腾讯云 COS，仅支持中国网络访问。如无法播放，请更换中国网络查看。</span>
+										</div>
+									</div>
 								</div>
 
 								<div class="flex min-w-0 flex-col justify-between gap-5">
