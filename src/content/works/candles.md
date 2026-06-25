@@ -147,6 +147,12 @@ float avg = EvaluateExpectedScore(myCard.cardType, myCard.powerValue);  // Σ Re
 
 ![三档 AI 难度选择：选项由枚举反射生成，新增难度 UI 零改动](/images/zhuzha-difficulty.webp)
 
+## 制作分享
+- UI部分：采取**提示词**--**Stitch**--**Figma** 这一个AI工作流，充分利用AI对于Html成熟编写+NanoBanana、Image2等优质图像模型来配合**Stitch**的Design.md来完成风格统一化的UI制作，最后选择性采取UI-Tookit *or* Figma进一步处理图像素材，分不同状态处理UI素材
+![Stitch处理UI展示](/images/candles-StitchUI1.webp)
+![Stitch处理UI展示](/images/candles-StitchUI2.webp)
+![Figma处理UI展示](/images/candles-FigmaUI.webp)
+
 ## 技术栈
 
 | 类别 | 技术 | 版本 |
