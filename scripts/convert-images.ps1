@@ -1,4 +1,6 @@
 
+# macOS/Linux: use the companion script  ./scripts/convert-images.sh
+
 <#
 .SYNOPSIS
     Batch convert images (JPG, PNG) to WebP using FFmpeg with high quality and compression settings.
