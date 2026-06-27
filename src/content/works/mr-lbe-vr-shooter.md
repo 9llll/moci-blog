@@ -7,7 +7,7 @@ image: "/images/mr-lbe-cover.webp"
 tags: ["Unity", "PICO", "VR", "MR", "Netcode", "LBE"]
 version: "PICO Enterprise · Unity 2022.3 LTS"
 architecture: "Netcode for GameObjects + VRIF/BNG + Emerald AI + PICO Enterprise SDK + URP"
-video: ""
+video: "https://coscandles.micostar.cc/picovr.mp4"
 videoPoster: "/images/mr-lbe-cover.webp"
 featured: true
 draft: false
