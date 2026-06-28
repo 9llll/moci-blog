@@ -7,7 +7,7 @@ image: "/images/zhuzha-cover.webp"
 tags: ["Unity", "C#", "HybridCLR", "YooAsset", "热更新", "Netcode", "CDN"]
 version: "Unity 6000.3.9f1 · URP 17.3 · HybridCLR v8.12.0 · YooAsset 2.3.19 · NGO 2.9.1"
 architecture: "MB 边界层 + 纯 C# 逻辑层 · 代码热更 + 资源热更双链路 · 服务端权威 · ~9651 行 / 74 脚本 / 12 模块"
-video: "https://coscandles.micostar.cc/candels.mp4"
+video: "https://coscandles.micostar.cc/candles.mp4"
 videoPoster: "/images/zhuzha-cover.webp"
 featured: true
 draft: false

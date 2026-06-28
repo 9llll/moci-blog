@@ -117,6 +117,7 @@ function toggle(slug: string) {
 										controls
 										playsinline
 										preload="metadata"
+										referrerpolicy="origin"
 										data-video-ready="false"
 										onloadedmetadata={(event) => {
 											const video = event.currentTarget;
