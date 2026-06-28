@@ -1,7 +1,7 @@
 ---
 import path from "node:path";
 import type { CollectionEntry } from "astro:content";
-import { profileConfig, siteConfig } from "@/config";
+import { profileConfig, siteConfig, umamiConfig } from "@/config";
 import ImageWrapper from "@components/misc/ImageWrapper.astro";
 import Markdown from "@components/misc/Markdown.astro";
 import MermaidRenderer from "@components/misc/MermaidRenderer.astro";
@@ -66,6 +66,16 @@ const jsonLd = {
 					{formatDateToYYYYMMDD(entry.data.updated)}
 				</span>
 			)}
+
+			<!-- page views -->
+			<span class="inline-flex items-center gap-1 rounded-md bg-neutral-100 px-2 py-0.5 dark:bg-neutral-800/60">
+				<Icon name="material-symbols:visibility-outline-rounded" class="text-base text-[var(--primary)]" />
+				<span id="page-views-count">--</span>
+			</span>
+			<span class="inline-flex items-center gap-1 rounded-md bg-neutral-100 px-2 py-0.5 dark:bg-neutral-800/60">
+				<Icon name="material-symbols:person-outline" class="text-base text-[var(--primary)]" />
+				<span id="page-visits-count">--</span>
+			</span>
 		</div>
 
 		<h1 class="mb-4 text-3xl font-bold text-black/90 dark:text-white/90 md:text-[2.25rem]/[2.75rem]">
@@ -165,5 +175,52 @@ const jsonLd = {
 			});
 			setupWorkVideo();
 		});
+	</script>
+
+	<script define:vars={{ slug: entry.slug, umamiConfig }}>
+		// 获取作品详情页访问量统计（与文章页一致，path 指向 /works/<slug>/）
+		async function fetchWorkPageViews(isRetry = false) {
+			if (!umamiConfig.enable) return;
+			try {
+				const { websiteId, token } = await getUmamiShareData(umamiConfig.baseUrl, umamiConfig.shareId);
+				const currentTimestamp = Date.now();
+				const pagePath = encodeURIComponent(`eq./works/${slug}/`);
+				const statsUrl = `${umamiConfig.baseUrl}/api/websites/${websiteId}/stats?startAt=0&endAt=${currentTimestamp}&unit=hour&timezone=${encodeURIComponent(umamiConfig.timezone)}&path=${pagePath}`;
+
+				const statsResponse = await fetch(statsUrl, {
+					headers: {
+						'x-umami-share-token': token,
+						'x-umami-share-context': 'true',
+					},
+				});
+
+				if (!statsResponse.ok) {
+					if (statsResponse.status === 401 && !isRetry) {
+						clearUmamiShareCache();
+						return fetchWorkPageViews(true);
+					}
+					throw new Error('获取统计数据失败');
+				}
+
+				const statsData = await statsResponse.json();
+				const pageViewsElement = document.getElementById('page-views-count');
+				const visitsElement = document.getElementById('page-visits-count');
+				if (pageViewsElement) pageViewsElement.textContent = (statsData.pageviews || 0).toString();
+				if (visitsElement) visitsElement.textContent = (statsData.visits || 0).toString();
+			} catch (error) {
+				console.error('Error fetching work page views:', error);
+				const pageViewsElement = document.getElementById('page-views-count');
+				const visitsElement = document.getElementById('page-visits-count');
+				if (pageViewsElement) pageViewsElement.textContent = '-';
+				if (visitsElement) visitsElement.textContent = '-';
+			}
+		}
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', fetchWorkPageViews);
+		} else {
+			fetchWorkPageViews();
+		}
+		document.addEventListener('swup:contentReplaced', fetchWorkPageViews);
 	</script>
 </MainGridLayout>

@@ -1,4 +1,4 @@
-import { getSortedPosts } from "./content-utils";
+import { getSortedPosts, getSortedWorks } from "./content-utils";
 
 type StatsData = {
 	totalPosts: number;
@@ -37,6 +37,12 @@ export async function getWritingStats(): Promise<StatsData> {
 	const yearMap = new Map<number, number>();
 	for (const p of postsWithWords) {
 		yearMap.set(p.year, (yearMap.get(p.year) || 0) + 1);
+	}
+	// 年度发文同时计入作品集（按作品的发布年份合并计数）
+	const allWorks = await getSortedWorks();
+	for (const w of allWorks) {
+		const year = new Date(w.data.published).getUTCFullYear();
+		yearMap.set(year, (yearMap.get(year) || 0) + 1);
 	}
 	const postsByYear = [...yearMap.entries()]
 		.sort((a, b) => b[0] - a[0])
