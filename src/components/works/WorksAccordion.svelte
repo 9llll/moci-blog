@@ -23,6 +23,7 @@ type Props = {
 
 let { works }: Props = $props();
 let openSlug = $state("");
+let startedVideos = $state<Record<string, boolean>>({});
 
 function toggle(slug: string) {
 	const nextSlug = openSlug === slug ? "" : slug;
@@ -110,6 +111,7 @@ function toggle(slug: string) {
 						{#if work.video}
 							<div class="grid gap-5 border-t border-[var(--line-divider)] p-4 md:grid-cols-[minmax(0,1.45fr)_minmax(16rem,0.75fr)] md:p-5">
 								<div class="relative aspect-video overflow-hidden rounded-xl bg-black">
+									{#if startedVideos[work.slug]}
 									<video
 										class="work-preview-video aspect-video h-full w-full bg-black object-contain"
 										src={work.video}
@@ -117,6 +119,7 @@ function toggle(slug: string) {
 										controls
 										playsinline
 										preload="auto"
+										autoplay
 										referrerpolicy="origin"
 										data-video-ready="false"
 										onloadedmetadata={(event) => {
@@ -133,6 +136,20 @@ function toggle(slug: string) {
 									>
 										当前浏览器不支持视频播放。
 									</video>
+									{:else}
+									<button
+										type="button"
+										onclick={() => startedVideos[work.slug] = true}
+										aria-label="播放视频"
+										class="group relative flex h-full w-full items-center justify-center overflow-hidden"
+										style={(work.videoPoster || work.image)
+											? `background-image: url(${work.videoPoster || work.image}); background-size: cover; background-position: center;`
+											: ""}
+									>
+										<span class="absolute inset-0 bg-black/20 transition-colors group-hover:bg-black/10"></span>
+										<Icon icon="material-symbols:play-circle-outline-rounded" class="relative text-6xl text-white/90 drop-shadow-lg transition-transform group-hover:scale-110" />
+									</button>
+									{/if}
 									<div class="absolute inset-0 flex items-center justify-center p-4" style="display: none;">
 										<div class="flex items-start gap-2 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
 											<Icon icon="material-symbols:info-outline-rounded" class="mt-0.5 flex-shrink-0 text-base" />

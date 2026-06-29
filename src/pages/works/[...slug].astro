@@ -104,15 +104,25 @@ const jsonLd = {
 				<video
 					class="work-detail-video aspect-video w-full bg-black object-contain"
 					data-video-ready="false"
-					src={entry.data.video}
+					data-src={entry.data.video}
 					poster={entry.data.videoPoster || entry.data.image}
 					controls
 					playsinline
-					preload="auto"
+					preload="none"
 					referrerpolicy="origin"
 				>
 					当前浏览器不支持视频播放。
 				</video>
+				<button
+					type="button"
+					class="video-play-overlay absolute inset-0 flex items-center justify-center bg-black/20 transition hover:bg-black/10"
+					style={(entry.data.videoPoster || entry.data.image)
+						? `background-image: url(${entry.data.videoPoster || entry.data.image}); background-size: cover; background-position: center;`
+						: ""}
+					aria-label="播放视频"
+				>
+					<Icon name="material-symbols:play-circle-outline-rounded" class="text-6xl text-white/90 drop-shadow-lg" />
+				</button>
 				<div class="video-error-overlay absolute inset-0 flex items-center justify-center p-4" style="display: none;">
 					<div class="flex items-start gap-2 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
 						<Icon name="material-symbols:info-outline-rounded" class="mt-0.5 flex-shrink-0 text-base" />
@@ -158,12 +168,27 @@ const jsonLd = {
 				video.addEventListener("error", () => {
 					if (video.dataset.videoReady === "true") return;
 					video.classList.add("hidden");
+					const playOverlay = video.parentElement?.querySelector(".video-play-overlay");
+					if (playOverlay) playOverlay.style.display = "none";
 					const overlay = video.parentElement?.querySelector(".video-error-overlay");
 					if (overlay) overlay.style.display = "flex";
 				});
 			}
 
-			document.querySelectorAll(".work-detail-video").forEach(bindVideo);
+			document.querySelectorAll(".work-detail-video").forEach((video) => {
+				bindVideo(video);
+				const playOverlay = video.parentElement?.querySelector(".video-play-overlay");
+				if (playOverlay) {
+					playOverlay.addEventListener("click", () => {
+						const src = video.dataset.src;
+						if (src) {
+							video.src = src;
+							video.play().catch(() => {});
+						}
+						playOverlay.style.display = "none";
+					});
+				}
+			});
 		})();
 
 		document.addEventListener("swup:contentReplaced", function resetWorkVideo() {
@@ -171,8 +196,11 @@ const jsonLd = {
 				video.dataset.bound = "";
 				video.dataset.videoReady = "false";
 				video.classList.remove("hidden");
+				video.removeAttribute("src");
 				const overlay = video.parentElement?.querySelector(".video-error-overlay");
 				if (overlay) overlay.style.display = "none";
+				const playOverlay = video.parentElement?.querySelector(".video-play-overlay");
+				if (playOverlay) playOverlay.style.display = "";
 			});
 			setupWorkVideo();
 		});
