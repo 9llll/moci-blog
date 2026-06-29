@@ -65,6 +65,9 @@ graph LR
 
 > 实线是请求 / 推送的同步链路，虚线是 KV 的异步副作用。
 
+## 手机端收信展示
+![iPhone's Bark展示](/images/cloudhook-iphone.webp)
+
 ## 关键设计一 · 无状态 HMAC Token 认证
 
 Token = `base64url(payload).hmac签名`，边缘函数收到请求后用 `HMAC_SECRET` 本地算一遍签名比对，不查 KV。有效 Token 从不入库，只在要踢掉某台设备时往 KV 写一条 `revoked_{jti}` 吊销键，键带 TTL = Token 剩余生命周期，过期自动消失。`exp===0` 表永久，`exp` 缺省直接判无效。
