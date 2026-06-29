@@ -116,7 +116,7 @@ function toggle(slug: string) {
 										poster={work.videoPoster || work.image}
 										controls
 										playsinline
-										preload="metadata"
+										preload="auto"
 										referrerpolicy="origin"
 										data-video-ready="false"
 										onloadedmetadata={(event) => {
