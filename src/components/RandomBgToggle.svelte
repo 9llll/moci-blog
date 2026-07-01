@@ -79,5 +79,9 @@ onMount(() => {
     aria-label={isRandom ? "切换到固定背景" : "切换到随机背景"}
     title={isRandom ? "切换到固定背景" : "切换到随机背景"}
 >
-    <Icon icon="material-symbols:casino" class="text-[1.25rem]" />
+    {#if isRandom}
+        <Icon icon="material-symbols:casino" class="text-[1.25rem]" />
+    {:else}
+        <Icon icon="material-symbols:image" class="text-[1.25rem]" />
+    {/if}
 </button>
