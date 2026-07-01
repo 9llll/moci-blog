@@ -189,11 +189,14 @@ const bannerOffset =
 			const fixedPortrait = htmlRoot.dataset.bgFixedPortrait || htmlRoot.dataset.bgFixed;
 			const initialBgUrl = isLandscape ? fixedLandscape : fixedPortrait;
 			if (initialBgUrl) {
-				htmlRoot.style.setProperty('--bg-url', `url(${initialBgUrl})`);
+				// 注意：--bg-url 会被 define:vars 同时内联到 <body>，导致 body::before 就近取到 <body> 的值而非这里设在 <html> 的值。
+				// 因此改用 body 不会覆盖的 --bg-url-active，body::before 通过 var(--bg-url-active, var(--bg-url)) 继承它。
+				htmlRoot.style.setProperty('--bg-url-active', `url(${initialBgUrl})`);
 			}
 
 			// Background image loading detection with mobile support and fallback
-			const bgUrl = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').trim();
+			const bgUrl = (getComputedStyle(document.documentElement).getPropertyValue('--bg-url-active').trim()
+				|| getComputedStyle(document.documentElement).getPropertyValue('--bg-url').trim());
 			const bgEnable = getComputedStyle(document.documentElement).getPropertyValue('--bg-enable').trim();
 			
 			//console.log('[BG Debug] URL:', bgUrl, 'Enable:', bgEnable);
@@ -278,7 +281,7 @@ const bannerOffset =
 				/* iOS Safari 需要明确的高度 */
 				min-height: 100vh !important;
 				min-height: -webkit-fill-available !important;
-				background-image: var(--bg-url) !important;
+				background-image: var(--bg-url-active, var(--bg-url)) !important;
 				background-position: var(--bg-position) !important;
 				background-size: var(--bg-size) !important;
 				background-repeat: var(--bg-repeat) !important;

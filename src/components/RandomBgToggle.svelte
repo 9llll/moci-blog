@@ -5,7 +5,9 @@ import { onMount } from "svelte";
 let isRandom = false;
 let button: HTMLButtonElement;
 
-const FIXED_BG = "--bg-url";
+// --bg-url 会被 Layout 的 define:vars 内联到 <body>，直接写 <html> 的 --bg-url 会被遮蔽。
+// 统一写 body 不会覆盖的 --bg-url-active，body::before 通过 var(--bg-url-active, var(--bg-url)) 继承。
+const FIXED_BG = "--bg-url-active";
 const CARD_BG = "--card-bg";
 const FLOAT_PANEL_BG = "--float-panel-bg";
 
