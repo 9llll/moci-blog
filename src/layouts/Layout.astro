@@ -95,6 +95,10 @@ const bannerOffset =
 <!DOCTYPE html>
 <html lang={siteLang} class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]"
 	  data-overlayscrollbars-initialize
+	  data-bg-fixed={siteConfig.background.src}
+	  data-bg-fixed-landscape={siteConfig.background.srcLandscape}
+	  data-bg-fixed-portrait={siteConfig.background.srcPortrait}
+	  data-bg-random={siteConfig.background.randomSrc}
 >
 	<head>
 
@@ -177,6 +181,16 @@ const bannerOffset =
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
 			offset = offset - offset % 4;
 			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+
+			// 根据横竖屏设置默认固定背景图
+			const htmlRoot = document.documentElement;
+			const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+			const fixedLandscape = htmlRoot.dataset.bgFixedLandscape || htmlRoot.dataset.bgFixed;
+			const fixedPortrait = htmlRoot.dataset.bgFixedPortrait || htmlRoot.dataset.bgFixed;
+			const initialBgUrl = isLandscape ? fixedLandscape : fixedPortrait;
+			if (initialBgUrl) {
+				htmlRoot.style.setProperty('--bg-url', `url(${initialBgUrl})`);
+			}
 
 			// Background image loading detection with mobile support and fallback
 			const bgUrl = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').trim();

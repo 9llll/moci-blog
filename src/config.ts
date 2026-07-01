@@ -37,7 +37,10 @@ export const siteConfig: SiteConfig = {
 	},
 	background: {
 		enable: true, // Enable background image
-		src: "https://img.micostar.cc/random", // 优先使用新 API
+		src: "https://img.micostar.cc/images/horizontal/h_031.webp", // 默认固定背景（横屏 31 号）
+		srcLandscape: "https://img.micostar.cc/images/horizontal/h_031.webp", // 横屏固定背景：EO-Random-Photo 第 31 号
+		srcPortrait: "https://img.micostar.cc/images/vertical/v_025.webp", // 竖屏固定背景：新上传的图片
+		randomSrc: "https://img.micostar.cc/random", // 随机图 API，点击右上角骰子按钮后启用
 		position: "center", // Background position: 'top', 'center', 'bottom'
 		size: "cover", // Background size: 'cover', 'contain', 'auto'
 		repeat: "no-repeat", // Background repeat: 'no-repeat', 'repeat', 'repeat-x', 'repeat-y'

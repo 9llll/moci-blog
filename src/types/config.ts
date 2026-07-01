@@ -33,6 +33,9 @@ export type SiteConfig = {
 	background: {
 		enable: boolean;
 		src: string;
+		srcLandscape?: string;
+		srcPortrait?: string;
+		randomSrc?: string;
 		position?: "top" | "center" | "bottom";
 		size?: "cover" | "contain" | "auto";
 		repeat?: "no-repeat" | "repeat" | "repeat-x" | "repeat-y";
