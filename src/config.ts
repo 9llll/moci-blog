@@ -11,10 +11,10 @@ import type {
 import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
-	title: "Betsy Blog",
-	subtitle: "分享网络技术、服务器部署、Unity开发、AI技术应用与原理",
+	title: "莫辞•人间",
+	subtitle: "执笔叙写四时烟火",
 	description:
-		"分享网络技术、服务器部署、Unity开发、AI技术应用与原理、作者为流转星(Betsy)",
+		"敛世间细碎温柔，书平日所见所感诸事。",
 
 	keywords: [],
 	lang: "zh_CN", // 'en', 'zh_CN', 'zh_TW', 'ja', 'ko', 'es', 'th'
@@ -122,8 +122,8 @@ export const navBarConfig: NavBarConfig = {
 
 export const profileConfig: ProfileConfig = {
 	avatar: "/images/avatar.webp", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
-	name: "流转星(Betsy)",
-	bio: ["爱我所爱，我们是彼此永远的动力"],
+	name: "莫辞",
+	bio: ["夫唯不争，故天下莫能与之争。"],
 	links: [
 		{
 			name: "Bilibli",
@@ -161,7 +161,7 @@ export const umamiConfig: UmamiConfig = {
 // 防盗链/域名保护配置
 export const antiLeechConfig: AntiLeechConfig = {
 	enable: true,
-	officialSites: [{ url: "https://www.micostar.cc", name: "主站" }],
+	officialSites: [{ url: "https://www.moci.cc", name: "主站" }],
 	debug: false,
 	warningTitle: "⚠️ 域名安全警告",
 	warningMessage:
