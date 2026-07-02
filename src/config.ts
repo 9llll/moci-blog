@@ -11,7 +11,7 @@ import type {
 import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
-	title: "莫 辞 • 人 间",
+	title: "莫辞人间",
 	subtitle: "执笔叙写四时烟火",
 	description:
 		"敛世间细碎温柔，书平日所见所感诸事。",
